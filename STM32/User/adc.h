@@ -9,3 +9,5 @@ void ADC_handller(void);
 
 void ADC_init(void);
 void moving_avg_update(void);
+float Calibration_TC_value(float input_TC);
+

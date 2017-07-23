@@ -289,10 +289,12 @@ void resetConf(void){
 		mcfg.cali_gain_TC_Temp =1;
 		mcfg.cali_offset_TC_Temp =0;
 
-		mcfg.cali_gain_Kelvin[R_RANGE_100] =1;
-		mcfg.cali_gain_Kelvin[R_RANGE_1K] =1;
-		mcfg.cali_offset_Kelvin_Ohm[R_RANGE_100] =0;
-		mcfg.cali_offset_Kelvin_Ohm[R_RANGE_1K] =0;
+		mcfg.cali_gain_Kelvin_mV[R_RANGE_100] =1;
+		mcfg.cali_gain_Kelvin_mV[R_RANGE_1K] =1;
+		mcfg.cali_offset_Kelvin_mV[R_RANGE_100] =0;
+		mcfg.cali_offset_Kelvin_mV[R_RANGE_1K] =0;
+		mcfg.Kelvin_current_mA[R_RANGE_1K] = 1.0;
+		mcfg.Kelvin_current_mA[R_RANGE_100] = 10;
 	
 		mcfg.cali_gain_DAC[0] =1;
 		mcfg.cali_offset_mV_DAC[0] =0;
@@ -306,7 +308,9 @@ void resetConf(void){
 		mcfg.Offset_ADC_mV[0] =0;
 		mcfg.Offset_ADC_mV[1] =0;
 		
-		memset(cfg.display_speed ,DISPLAY_SLOW, sizeof(cfg.display_speed));
+		cfg.kelvine_zero_offset[0] =0;
+		cfg.kelvine_zero_offset[1]=0;
+		memset(cfg.display_speed ,DISPLAY_NORMAL, sizeof(cfg.display_speed));
 		
 //		cfg.get_char = CDC_getchar;
 //		cfg.strPrint = CDC_Transmit_FS;

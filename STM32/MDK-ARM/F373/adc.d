@@ -73,3 +73,4 @@ f373\adc.o: ..\User\dac.h
 f373\adc.o: ..\User\config.h
 f373\adc.o: ..\User\Digital_control.h
 f373\adc.o: ..\User\rtc.h
+f373\adc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

@@ -122,6 +122,7 @@ typedef struct config_t {
 			_measuer_item_e display_speed[SAMPLE_MAX_ITEM];
 			
 			int16_t calib_TC_table[12];
+			float kelvine_zero_offset[2];
 
 			bool CAN_TX_msg_loopback;
 		_port_typel_e mavlink_port;
@@ -155,8 +156,9 @@ typedef struct master_t {
 			float cali_gain_TC_Temp;
 			float  cali_offset_TC_Temp;
 	
-			float cali_gain_Kelvin[2];
-			float cali_offset_Kelvin_Ohm[2];
+			float Kelvin_current_mA[2];
+			float cali_gain_Kelvin_mV[2];
+			float cali_offset_Kelvin_mV[2];
 	
 //			float cali_gain_1K_Reg;
 //			float cali_gain_100_Reg;

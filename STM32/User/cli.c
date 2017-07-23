@@ -222,6 +222,7 @@ void Mavlink_handller(void) {
 
 static uint16_t mavlink_msg_control( const mavlink_message_t * msg,  uint8_t *  const buff)  {
 		bool reboot_flag=false;
+		float calibrated_TC;
 //		uint8_t i;
 //		static RTC_TimeTypeDef time;
 //		static RTC_DateTypeDef date;	
@@ -233,7 +234,12 @@ static uint16_t mavlink_msg_control( const mavlink_message_t * msg,  uint8_t *  
 				if(msg->len ==0) {		//수순값의 길이가 구조체 자료형의 크기와 일치 할경우 수신값을 디코딩
 //					mavlink_msg_measuring_data_pack(cfg.sys_id, 1, &Tmsg, measu_data.Kelvin_Ohm, (float)Cx, (float)Lx, measu_data.TC_temp,measu_data.Kelvin_mV,measu_data.TC_mV, \
 //					measu_data.ADC_mV[0],measu_data.ADC_mV[1],READ_DI_PORT,0);
-					mavlink_msg_measuring_data_pack(cfg.sys_id, 1, &Tmsg, avg_item[SAMPLE_KELVIN_OHM], (float)Cx, (float)Lx, avg_item[SAMPLE_TC_TEMP],avg_item[SAMPLE_KELVIN_mV],avg_item[SAMPLE_TC_mV], \
+					calibrated_TC = Calibration_TC_value(avg_item[SAMPLE_TC_TEMP]);
+//					
+//					mavlink_msg_measuring_data_pack(cfg.sys_id, 1, &Tmsg, avg_item[SAMPLE_KELVIN_OHM], (float)Cx, (float)Lx, avg_item[SAMPLE_TC_TEMP],avg_item[SAMPLE_KELVIN_mV],avg_item[SAMPLE_TC_mV], \
+//					avg_item[SAMPLE_TC_ADC1], avg_item[SAMPLE_TC_ADC2],READ_DI_PORT,0);
+					
+					mavlink_msg_measuring_data_pack(cfg.sys_id, 1, &Tmsg, avg_item[SAMPLE_KELVIN_OHM], (float)Cx, (float)Lx, calibrated_TC,avg_item[SAMPLE_KELVIN_mV],avg_item[SAMPLE_TC_mV], \
 					avg_item[SAMPLE_TC_ADC1], avg_item[SAMPLE_TC_ADC2],READ_DI_PORT,0);
 					
 					Tx_len =mavlink_msg_to_send_buffer(buff, &Tmsg);
@@ -303,40 +309,35 @@ static uint16_t mavlink_msg_control( const mavlink_message_t * msg,  uint8_t *  
 				
 			case MAVLINK_MSG_ID_Kelvin_CALIBRATION_Data:
 				if(msg->len ==0) {		//수순값의 길이가 구조체 자료형의 크기와 일치 할경우 수신값을 디코딩
-					mavlink_msg_kelvin_calibration_data_pack(cfg.sys_id,1, &Tmsg, mcfg.cali_gain_Kelvin, mcfg.cali_offset_Kelvin_Ohm);
+					mavlink_msg_kelvin_calibration_data_pack(cfg.sys_id,1, &Tmsg, mcfg.cali_gain_Kelvin_mV, mcfg.cali_offset_Kelvin_mV);
 					Tx_len =mavlink_msg_to_send_buffer(buff, &Tmsg);
 				}
 				else {
-					mavlink_msg_kelvin_calibration_data_get_Gain_Kelvin(msg, mcfg.cali_gain_Kelvin);
-					mavlink_msg_kelvin_calibration_data_get_Offset_Kelvin(msg, mcfg.cali_offset_Kelvin_Ohm);
+					mavlink_msg_kelvin_calibration_data_get_Gain_Kelvin(msg, mcfg.cali_gain_Kelvin_mV);
+					mavlink_msg_kelvin_calibration_data_get_Offset_Kelvin(msg, mcfg.cali_offset_Kelvin_mV);
 				}
 				break;
 			case MAVLINK_MSG_ID_REAL_TIME_CLOCK_SET:
 				if(msg->len ==0) {		//수순값의 길이가 구조체 자료형의 크기와 일치 할경우 수신값을 디코딩
-					HAL_RTC_GetDate(&hrtc,&RTC_date, RTC_FORMAT_BIN);
 					HAL_RTC_GetTime(&hrtc,&RTC_time, RTC_FORMAT_BIN);
-					
+					HAL_RTC_GetDate(&hrtc,&RTC_date, RTC_FORMAT_BIN);
 					mavlink_msg_real_time_clock_set_pack(cfg.sys_id,1, &Tmsg, RTC_time.SubSeconds, (uint16_t)RTC_date.Year+2000, RTC_date.Month, RTC_date.Date, RTC_date.WeekDay, RTC_time.Hours, \
 					RTC_time.Minutes, RTC_time.Seconds,  RTC_time.TimeFormat ,RTC_time.DayLightSaving);
-//					mavlink_msg_real_time_clock_set_pack(cfg.sys_id,1, &Tmsg, (uint16_t)date.Year+2000, date.Month, date.Date, \
-//					date.WeekDay, time.Hours, time.Minutes, time.Seconds,(uint8_t)time.SubSeconds);
 					Tx_len =mavlink_msg_to_send_buffer(buff, &Tmsg);
 				}
 				else {
-
 					RTC_date.Year = (uint8_t)mavlink_msg_real_time_clock_set_get_year(msg)-2000;
 					RTC_date.Month = mavlink_msg_real_time_clock_set_get_month(msg);
 					RTC_date.Date = mavlink_msg_real_time_clock_set_get_mday(msg);
 					RTC_date.WeekDay = mavlink_msg_real_time_clock_set_get_wday(msg);
 					HAL_RTC_SetDate(&hrtc, &RTC_date, RTC_FORMAT_BIN);
-//						osDelay(1);
 					
 					RTC_time.Hours = mavlink_msg_real_time_clock_set_get_hour(msg);
 					RTC_time.Minutes = mavlink_msg_real_time_clock_set_get_min(msg);
 					RTC_time.Seconds = mavlink_msg_real_time_clock_set_get_sec(msg);
-					RTC_time.SubSeconds =mavlink_msg_real_time_clock_set_get_subsec(msg);
+//					RTC_time.SubSeconds =mavlink_msg_real_time_clock_set_get_subsec(msg);
 					RTC_time.TimeFormat = mavlink_msg_real_time_clock_set_get_timeFormat(msg);
-					RTC_time.DayLightSaving= (uint32_t)mavlink_msg_real_time_clock_set_get_DayLightSaving(msg);
+//					RTC_time.DayLightSaving= (uint32_t)mavlink_msg_real_time_clock_set_get_DayLightSaving(msg);
 //					
 					HAL_RTC_SetTime(&hrtc, &RTC_time, RTC_FORMAT_BIN);
 				}
@@ -353,6 +354,14 @@ static uint16_t mavlink_msg_control( const mavlink_message_t * msg,  uint8_t *  
 					cfg.set_R_range =(kelvin_reg_range_e) mavlink_msg_measuring_setting_get_Kelvin_Range(msg);
 					cfg.LC_mode_set =mavlink_msg_measuring_setting_get_LC_mode_set(msg);
 					cfg.LC_range_set =mavlink_msg_measuring_setting_get_L_C_Range(msg);
+					
+					
+					switch(sys.kelvin_mode) {
+						case 1:
+							cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]= avg_item[SAMPLE_KELVIN_OHM];
+							sys.kelvin_mode=0;
+							break;
+					}
 				}
 				break;
 				

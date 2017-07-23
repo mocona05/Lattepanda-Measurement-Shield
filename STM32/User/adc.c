@@ -1,5 +1,7 @@
 #include "board.h"
 
+#include <math.h>
+
 uint32_t raw_SDADC[3];
 uint32_t raw_ADC[MAX_12BIT_ADC_CHANNEL];
 extern SDADC_HandleTypeDef hsdadc1;
@@ -63,7 +65,7 @@ void ADC_handller(void) {
 		int16_t tc_adc=0;
 		int16_t kelvin_adc=0;
 		
-		uint16_t Kelvin_current_mA;
+//		uint16_t Kelvin_current_mA;
 		/* Returns the injected channel conversion data */
 		tc_adc = (int16_t) ((uint32_t)(raw_SDADC[0] & 0x0000FFFF));
 		kelvin_adc = (int16_t) ((uint32_t)(raw_SDADC[1] & 0x0000FFFF));
@@ -85,20 +87,14 @@ void ADC_handller(void) {
 		}
 		befor_R_range = cfg.set_R_range;
 		
-		measu_data.Kelvin_mV = ((float)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL)) ;	//디퍼렌셜
 		
-		switch((uint8_t)cfg.set_R_range) {
-			case R_RANGE_1K:
-				Kelvin_current_mA = 1;
-//				measu_data.read_R_range = R_RANGE_1K;		//1~1k Ohm Range
-				measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/Kelvin_current_mA * mcfg.cali_gain_Kelvin[R_RANGE_1K] + mcfg.cali_offset_Kelvin_Ohm[R_RANGE_1K];
-				break;
-			case R_RANGE_100:
-				Kelvin_current_mA = 10;
-//				measu_data.read_R_range = R_RANGE_100;		//0.1 ~ 100 Ohm Range
-				measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/Kelvin_current_mA * mcfg.cali_gain_Kelvin[R_RANGE_100] + mcfg.cali_offset_Kelvin_Ohm[R_RANGE_100];
-				break;
-		}
+		
+		measu_data.Kelvin_mV = ((float)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//디퍼렌셜
+			
+		
+		
+		
+		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range]-cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range];
 	
 		
 /*
@@ -153,3 +149,124 @@ void moving_avg_update(void) {
 			}
 		}
 }
+
+static float TC_cali_map [][2] ={			//열전상 온도 보정맵
+{	-100	,	-83.2	},	
+{	-80	,	-67.9	},	
+{	-50	,	-42.5	},	
+{	-30	,	-23.9},
+{	-20	,	-15.2},
+{	0.001	,	4.9	},
+{	50	,	55.2	},
+{	100	,	106.1	},
+{	200	,	206.8	},
+{	300	,	308.1
+},
+{	400	,	412.3	},
+{	500	,	517.7},	
+{	600	,	622.9	},	
+{	700	,	730.2	},
+{	800	,	834},
+{	900	,	935.1	},
+{	1000	,	1033.6},
+{	1100	,	1129.3},
+{	1200	,	1222.2},
+{	1300	,	1312.2},
+{	1370	,	1372.2},
+
+};
+#define TC_R_MAP_DATA_SIZE 	(sizeof(TC_cali_map)/ sizeof(TC_cali_map[0]))
+	
+
+static float interpolation (float (* pMap_data)[2], float  input_value, uint16_t size_dim ) {		//직선보간 함수
+	float  Interpolation_result=0;
+	float A0=0, A=0, gap=0, T0=0;	
+	uint16_t i=0;
+	
+	for( i=0; i < size_dim ; i++) {
+		if(( pMap_data[i][1] <=  input_value && pMap_data[i+1][1] >=  input_value) || pMap_data[0][1] > input_value) {
+			#if 1	//1열 2열 이 모두 오름차순일 경우
+			gap = pMap_data[i+1][0] - pMap_data[i][0];//속한 구간의 큰값 - 작은값
+			T0 =  pMap_data[i+1][0];
+			A0 =pMap_data[i+1][1];
+			A =  pMap_data[i][1];
+			#else		//1열 오름 차순 2열이 내림차순일 경우
+			gap = pMap_data[i][0] - pMap_data[i+1][0];//속한 구간의 큰값 - 작은값
+			T0 =  pMap_data[i][0];
+			A0 =pMap_data[i][1];
+			A =  pMap_data[i+1][1];
+			#endif
+			break;
+		}
+	}
+ 	Interpolation_result = (T0 - (A0-  input_value)/(A0-A) *gap);		// 실수 보정계산
+//	Interpolation_result = ((T0<<7) - ((A0-input_value)<<7)/(A0-A) *gap)>>7;		//보정계산 
+	return Interpolation_result ;
+}
+
+
+float Calibration_TC_value(float input_TC) {
+//			return	interpolation(TC_ch_set[TCNo].cali_map,(((float)tc_value->Raw_Temp*0.25)+tc_value->CJC_Temp), TC_ch_set[TCNo].table_size  );
+			return	interpolation(TC_cali_map, input_TC, TC_R_MAP_DATA_SIZE  );
+	
+}
+
+			
+
+// int16_t Calibration_TC_Table[][3] = {
+//{	-40	,	650	,	0	},//시작데이터는 추세를 연장한  추측데이터임 
+//{	596	,	600	,	1631	},
+//{	603	,	547	,	1577	},
+//{	610	,	500	,	1557	},
+//{	620	,	444	,	1609	},
+//{	629	,	401	,	1620	},
+//{	642	,	348	,	1616	},
+//{	655	,	299	,	1453	},
+//{	673	,	248	,	1584	},
+//{	695	,	199	,	1614	},
+//{	708	,	172	,	1442	},
+//{	720	,	155	,	1883	},
+//{	740	,	128	,	1742	},
+//{	769	,	100	,	2053	},
+//{	800	,	77	,	2243	},
+//{	825	,	62	,	2405	},
+//{	859	,	48	,	3102	},
+//{	900	,	36	,	3854	},
+//{	950	,	25	,	4526	},
+
+//{-1,0,0},
+//};
+
+
+//#define DISP_MIN_DEGC -100
+//#define DISP_MAX_DEGC 1400
+// float  Calibraton_TC_to_Temperature (int16_t (* table)[3], float  TC_degC) {
+//	int32_t	temp_degC;
+//	uint8_t	 i=0;
+//	uint32_t 	K0;
+//	uint32_t 	R0;
+//	uint32_t 	B_10x;
+////	float Rpvs_Ohm = (Rpvs_mOhm/1000);
+////	float Rpvs_Ohm = L9780_stat.Rpvs;
+//		if( TC_degC < DISP_MIN_DEGC ){
+//				temp_degC =  DISP_MIN_DEGC;
+//				return 0;
+//		}
+//		else if( DISP_MAX_DEGC > table[0][1]){	//테이블의 최대 저항값보다 클경우
+//			temp_degC = DISP_MAX_DEGC;
+//				return 0;
+//		}
+//		else {
+//				for(i=0 ;table[i][0] >= 0; i++) {
+//						if( TC_degC<= table[i][1] && TC_degC > table[i+1][1] ){
+//							K0 = table[i][0];
+//							R0 = table[i][1];
+//							B_10x  = table[i+1][2];
+//							temp_degC = K0*exp((float)B_10x/10*((float)1/(273+ TC_degC)-(float)1/(273+R0)));
+////						temp_degC =  (uint16_t)temp_degC;
+//							return temp_degC;
+//						}
+//				}
+//		}
+//		return DISP_MIN_DEGC;	//open TC
+//}
