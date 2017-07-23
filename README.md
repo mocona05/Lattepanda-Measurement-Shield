@@ -14,6 +14,7 @@ Lattepanda Measurement Shield
 
 <img src="https://4.bp.blogspot.com/-EIOpuW8s08U/WPvsVH6OY5I/AAAAAAAAAQc/bQFDPVESbZ4_RLP7BEki9KMkxXw0RwgPQCLcB/s1600/pcb_v1.3_module02.png">
 
+<img src="https://4.bp.blogspot.com/-LTR4NQFNVGM/WVkEyMozDCI/AAAAAAAAAT0/OzUg7wLmQ4Yqlc44jTTvWfkr0xaZXs_aQCLcBGAs/s640/cube.png">
 
 https://tk-labs.blogspot.kr/2017/04/lattepanda-single-board-pc-mersument.html
 
