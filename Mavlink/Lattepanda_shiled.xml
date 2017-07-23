@@ -1,0 +1,123 @@
+<?xml version='1.0'?>
+ <mavlink>
+ <version>3</version>
+        <enums>
+        </enums>
+        <messages>
+            <!-- Messages for Lattepanda shiled  -->
+            <message id="201" name="MEASURING_DATA">
+                <description>Message For Lattepanda measuring module</description>
+                <field type="float" name="Reg">4 Wire Kelvin [mOhm]</field>
+                <field type="float" name="Cap"> Capacitance [pF]</field>
+                <field type="float" name="Ind"> inductance [nH]</field>
+                <field type="float" name="TC"> Temperature [degC*10]</field>
+                <field type="float" name="kelvin_mV">4 Wire Kelvin [mV]</field>
+                <field type="float" name="TC_mV">4 Wire TC mV [mV]</field>
+                <field type="uint16_t" name="ADC_ch1"> 12bit ADC [mV]</field>
+                <field type="uint16_t" name="ADC_ch2"> 12bit ADC [mV]</field>
+                <field type="uint8_t" name="DI"> Digital Input [High/Low]</field>
+                <field type="uint8_t" name="Set_Status"> Setting status bit</field>
+             </message>
+            <message id="202" name="DAC_SETTING_DATA">
+                <description>Send Data For PC</description>
+                <field type="uint16_t" name="DAC_ch1"> 12bit DAC [mV]</field>
+                <field type="uint16_t" name="DAC_ch2"> 12bit DAC [mV]</field>
+             </message>
+            <message id="203" name="DIGITAL_OUT_SETTING_DATA">
+                <description>Send Data For PC</description>
+                <field type="float" name="L_Side_Freq"> Low_Side_out_Freqency setting  [Hz]</field>
+                <field type="float" name="L_Side_Duty"> Low_Side_out_Duty setting  [%] Digit</field>
+                <field type="uint8_t" name="DO"> Digital Output [High/Low]</field>
+             </message>
+            <message id="204" name="MEASURING_SETTING">
+                <description>Send Data For PC</description>
+                <field type="uint8_t[6]" name="Display_speed"> Display Speed setting</field>
+                <field type="uint8_t" name="Kelvin_mode_set"> 4-Wire Kelvin Set mode</field>
+                <field type="uint8_t" name="Kelvin_Range"> 4-Wire Kelvin Set Range [High/Low]</field>
+                <field type="uint8_t" name="LC_mode_set">  Calibration or L measuring or C measuring sellction </field>
+                <field type="uint8_t" name="L_C_Range">  L  C measuring Range sellction </field>
+             </message>
+            <message id="205" name="CAN_BUS_CONFIG_SETTING">
+                <description>Receive data For Lattepanda module</description>
+                <field type="uint32_t" name="Base_ID"> CAN Base ID </field>
+                <field type="uint8_t" name="Baud"> CAN Baud speed </field>
+                <field type="uint8_t" name="Protocol_set"> CAN Rx/Tx to uart Protocol setting </field>
+             </message>
+            <message id="206" name="SYSTEM_CONFIG_SETTING">
+                <description>Receive data For Lattepanda module</description>
+                <field type="uint8_t" name="sys_id"> System_id </field>
+             </message>
+            <message id="207" name="RECEIVE_CAN_DATA">
+                <description>Receive data For Lattepanda module</description>
+                <field type="uint32_t" name="CAN_ID"> CAN ID</field>
+                <field type="uint8_t[8]" name="CAN_Data"> CAN DATA</field>
+                <field type="uint8_t" name="CAN_RTR"> CAN Request</field>
+             </message>
+            <message id="208" name="TRANSMIT_CAN_DATA">
+                <description>Send Data For PC</description>
+                <field type="uint32_t" name="CAN_ID"> CAN ID</field>
+                <field type="uint8_t[8]" name="CAN_Data"> CAN DATA</field>
+                <field type="uint8_t" name="CAN_RTR"> CAN Request</field>
+             </message>
+            <message id="209" name="REAL_TIME_CLOCK_SET">
+                <description>Message For ACU Controler or PC</description>
+                <field type="uint32_t" name="subsec">Real time clock sec setting</field>
+                <field type="uint16_t" name="year">Real time clock Year setting</field>
+                <field type="uint8_t" name="month">Real time clock month setting</field>
+                <field type="uint8_t" name="mday">Real time clock month setting</field>
+                <field type="uint8_t" name="wday">Real time clock wday setting</field>
+                <field type="uint8_t" name="hour">Real time clock hour setting</field>
+                <field type="uint8_t" name="min">Real time clock min setting</field>
+                <field type="uint8_t" name="sec">Real time clock sec setting</field>
+                <field type="uint8_t" name="timeFormat">Real time clock timeFormat setting</field>
+                <field type="uint8_t" name="DayLightSaving">Real time clock DayLightSaving setting</field>
+             </message>
+            <message id="210" name="ALARM_SET_A">
+                <description>Message For ACU Controler or PC</description>
+               <field type="uint8_t" name="AL_Mask_week">Alarm Mask setting</field>
+               <field type="uint8_t" name="AL_Mask_hour">Alarm Mask setting</field>
+               <field type="uint8_t" name="AL_Mask_min">Alarm Mask setting</field>
+               <field type="uint8_t" name="AL_Mask_sec">Alarm Mask setting</field>
+               <field type="uint8_t" name="AL_date_week_day_sel">Alarm Mask setting</field>
+               <field type="uint8_t" name="AL_date">Alarm Mask setting</field>
+                <field type="uint8_t" name="AL_hour">Alarm time  hour setting</field>
+                <field type="uint8_t" name="AL_min">Alarm time  min setting</field>
+                <field type="uint8_t" name="AL_sec">Alarm time  sec setting</field>
+             </message>
+
+            <message id="220" name="ADC_CALIBRATION_Data">
+                <description>Send Data For PC</description>
+                <field type="float[2]" name="Gain_ADC">12bit ADC calibration gain</field>
+                <field type="float[2]" name="Offset_ADC_mV">12bit ADC calibration offset[mV]</field>
+                <field type="float" name="Vref_ADC_mV"> 12bit ADC Verf</field>
+                <field type="float" name="Vref_SDADC_mV"> 16bit ADC Verf</field>
+             </message>
+            <message id="221" name="TC_CALIBRATION_Data">
+                <description>Send Data For PC</description>
+                <field type="float" name="Gain_TCV"> TCV Gain </field>
+                <field type="float" name="Offset_mV_TCV"> TCV Offset mV</field>
+                <field type="float" name="Gain_TC_degC"> TC Gain degC </field>
+                <field type="float" name="Offset_TC_degC"> TC Offset degC </field>
+                <field type="float" name="Vref_mV_TC"> TC Verf mV</field>
+                <field type="int16_t[12]" name="Table_degC"> TC Calibration map Table</field>
+             </message>
+            <message id="222" name="Kelvin_CALIBRATION_Data">
+                <description>Send Data For PC</description>
+                <field type="float[2]" name="Gain_Kelvin"> Kelvin gain </field>
+                <field type="float[2]" name="Offset_Kelvin"> Kelvin offset </field>
+             </message>
+            <message id="223" name="DAC_CALIBRATION_Data">
+                <description>Send Data For PC</description>
+                <field type="float[2]" name="Gain_DAC"> DAC gain</field>
+                <field type="float[2]" name="Offset_DAC"> DAC Offset mV </field>
+             </message>
+            <message id="230" name="SYSTEM_CONTROL_SET">
+                <description>Message For PC</description>
+                <field type="uint8_t" name="save_config">save config value</field>
+                <field type="uint8_t" name="Reboot">System reboot control set</field>
+                <field type="uint8_t" name="default_set">setting data all default set</field>
+             </message>
+        </messages>
+</mavlink>
+
+
