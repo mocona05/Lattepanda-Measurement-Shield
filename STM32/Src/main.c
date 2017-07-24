@@ -80,6 +80,7 @@ DMA_HandleTypeDef hdma_sdadc3;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim19;
 
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
@@ -111,6 +112,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_TIM19_Init(void);
 void StartDefaultTask(void const * argument);
 void Tick1_Task(void const * argument);
 
@@ -183,6 +185,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
+  MX_TIM19_Init();
 
   /* USER CODE BEGIN 2 */
 	systemInit();
@@ -213,11 +216,11 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 320);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 300);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Task_1ms */
-  osThreadDef(Task_1ms, Tick1_Task, osPriorityNormal, 1, 240);
+  osThreadDef(Task_1ms, Tick1_Task, osPriorityNormal, 0, 240);
   Task_1msHandle = osThreadCreate(osThread(Task_1ms), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -302,7 +305,7 @@ void SystemClock_Config(void)
   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInit.USBClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   PeriphClkInit.SdadcClockSelection = RCC_SDADCSYSCLK_DIV12;
-  PeriphClkInit.Adc1ClockSelection = RCC_ADC1PCLK2_DIV2;
+  PeriphClkInit.Adc1ClockSelection = RCC_ADC1PCLK2_DIV6;
 
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -497,9 +500,9 @@ static void MX_RTC_Init(void)
     /**Initialize RTC and set the Time and Date 
     */
   if(HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2){
-  sTime.Hours = 13;
-  sTime.Minutes = 14;
-  sTime.Seconds = 15;
+  sTime.Hours = 0;
+  sTime.Minutes = 0;
+  sTime.Seconds = 0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
@@ -507,10 +510,10 @@ static void MX_RTC_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
-  sDate.Month = RTC_MONTH_JULY;
-  sDate.Date = 18;
-  sDate.Year = 17;
+  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+  sDate.Month = RTC_MONTH_JANUARY;
+  sDate.Date = 1;
+  sDate.Year = 0;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
   {
@@ -575,7 +578,6 @@ static void MX_SDADC3_Init(void)
   hsdadc3.Init.FastConversionMode = SDADC_FAST_CONV_DISABLE;
   hsdadc3.Init.SlowClockMode = SDADC_SLOW_CLOCK_DISABLE;
   hsdadc3.Init.ReferenceVoltage = SDADC_VREF_EXT;
-  hsdadc3.InjectedTrigger = SDADC_SOFTWARE_TRIGGER;
   if (HAL_SDADC_Init(&hsdadc3) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -588,23 +590,6 @@ static void MX_SDADC3_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Injected Mode 
-    */
-  if (HAL_SDADC_SelectInjectedDelay(&hsdadc3, SDADC_INJECTED_DELAY) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  if (HAL_SDADC_SelectInjectedTrigger(&hsdadc3, SDADC_SOFTWARE_TRIGGER) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  if (HAL_SDADC_InjectedConfigChannel(&hsdadc3, SDADC_CHANNEL_8, SDADC_CONTINUOUS_CONV_ON) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
     /**Set parameters for SDADC configuration 1 Register 
     */
   ConfParamStruct.InputMode = SDADC_INPUT_MODE_DIFF;
@@ -612,13 +597,6 @@ static void MX_SDADC3_Init(void)
   ConfParamStruct.CommonMode = SDADC_COMMON_MODE_VSSA;
   ConfParamStruct.Offset = 0;
   if (HAL_SDADC_PrepareChannelConfig(&hsdadc3, SDADC_CONF_INDEX_1, &ConfParamStruct) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure the Injected Channel 
-    */
-  if (HAL_SDADC_AssociateChannelConfig(&hsdadc3, SDADC_CHANNEL_8, SDADC_CONF_INDEX_1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -756,6 +734,54 @@ static void MX_TIM5_Init(void)
 
 }
 
+/* TIM19 init function */
+static void MX_TIM19_Init(void)
+{
+
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+  TIM_OC_InitTypeDef sConfigOC;
+
+  htim19.Instance = TIM19;
+  htim19.Init.Prescaler = 720;
+  htim19.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim19.Init.Period = 10000;
+  htim19.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim19.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim19) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim19, &sClockSourceConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_OC_Init(&htim19) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim19, &sMasterConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sConfigOC.OCMode = TIM_OCMODE_ACTIVE;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_OC_ConfigChannel(&htim19, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /* USART2 init function */
 static void MX_USART2_UART_Init(void)
 {
@@ -783,8 +809,8 @@ static void MX_USART2_UART_Init(void)
 static void MX_DMA_Init(void) 
 {
   /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */

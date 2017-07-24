@@ -57,6 +57,7 @@ extern DAC_HandleTypeDef hdac1;
 extern DMA_HandleTypeDef hdma_sdadc1;
 extern DMA_HandleTypeDef hdma_sdadc3;
 extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim19;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
 extern UART_HandleTypeDef huart2;
@@ -356,6 +357,20 @@ void USB_LP_IRQHandler(void)
   /* USER CODE BEGIN USB_LP_IRQn 1 */
 
   /* USER CODE END USB_LP_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM19 global interrupt.
+*/
+void TIM19_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM19_IRQn 0 */
+
+  /* USER CODE END TIM19_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim19);
+  /* USER CODE BEGIN TIM19_IRQn 1 */
+
+  /* USER CODE END TIM19_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

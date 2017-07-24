@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/cube/F373/Inc
+HeaderPath=C:/Users/cona0/Documents/CUBE/F373/Inc
 HeaderFiles=FreeRTOSConfig.h;stm32f3xx_it.h;stm32f3xx_hal_conf.h;main.h;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_cdc_if.h;
-SourcePath=C:/cube/F373/Src
+SourcePath=C:/Users/cona0/Documents/CUBE/F373/Src
 SourceFiles=FreeRTOSConfig.h;stm32f3xx_it.h;stm32f3xx_hal_conf.h;main.h;freertos.c;stm32f3xx_it.c;stm32f3xx_hal_msp.c;main.c;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_cdc_if.h;usb_device.c;usbd_conf.c;usbd_desc.c;usbd_cdc_if.c;stm32f3xx_hal_timebase_TIM.c;
 
 [PreviousLibFiles]
