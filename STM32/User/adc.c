@@ -58,8 +58,18 @@ void ADC_init(void) {
 	}
 }
 
+
+#define DISP_NORMAL_SAMPLE	5L
+#define DISP_NORMAL_RATE		(DISP_NORMAL_SAMPLE -1)
+#define DISP_SLOW_SAMPLE	20L
+#define DISP_SLOWL_RATE		(DISP_SLOW_SAMPLE -1)
+#define DISP_VSLOW_SAMPLE	100L
+#define DISP_VSLOW_RATE		(DISP_VSLOW_SAMPLE -1)
+
 void ADC_handller(void) {
 		static int8_t befor_R_range =-1;
+		static double zero_offset;
+		static uint16_t zero_sample_no=0;
 
 		uint8_t i;
 		int16_t tc_adc=0;
@@ -91,9 +101,6 @@ void ADC_handller(void) {
 		
 		measu_data.Kelvin_mV = ((float)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//µðÆÛ·»¼È
 			
-		
-		
-		
 		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range]-cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range];
 	
 		
@@ -110,15 +117,24 @@ AD8495ÀÇ REF_V = 1.25V
 		for(i=0; i <=MAX_12BIT_ADC_CHANNEL; i++) {
 				measu_data.ADC_mV[i] = (float)raw_ADC[i]/ADC_TO_VOLTAGE_RATIO * mcfg.Gain_ADC[i] + mcfg.Offset_ADC_mV[i];
 		}
+		if(sys.calvin_zero_calibration_flag) {
+//				sys.calvin_zero_calibration_flag =false;
+//				cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]=0;
+//			zero_offset =  ((double)zero_offset * DISP_VSLOW_RATE + (measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range])) / DISP_VSLOW_SAMPLE;  
+			zero_offset =  ((double)zero_offset * DISP_VSLOW_RATE + measu_data.Kelvin_Ohm) / DISP_VSLOW_SAMPLE;  
+			zero_sample_no++;
+			if(zero_sample_no >=DISP_VSLOW_SAMPLE+10) {
+				sys.calvin_zero_calibration_flag =false;				
+				zero_sample_no=0;
+				cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range] += zero_offset;
+				zero_offset=0;
+			}
+		}
+		
 }
 
 
-#define DISP_NORMAL_SAMPLE	10L
-#define DISP_NORMAL_RATE		(DISP_NORMAL_SAMPLE -1)
-#define DISP_SLOW_SAMPLE	100L
-#define DISP_SLOWL_RATE		(DISP_SLOW_SAMPLE -1)
-#define DISP_VSLOW_SAMPLE	1000L
-#define DISP_VSLOW_RATE		(DISP_VSLOW_SAMPLE -1)
+
 
 
 void moving_avg_update(void) {
@@ -148,6 +164,7 @@ void moving_avg_update(void) {
 				break;
 			}
 		}
+		
 }
 
 static float TC_cali_map [][2] ={			//¿­Àü»ó ¿Âµµ º¸Á¤¸Ê

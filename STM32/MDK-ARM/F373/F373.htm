@@ -3,11 +3,11 @@
 <title>Static Call Graph - [F373\F373.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image F373\F373.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050169: Last Updated: Tue Jul 25 07:39:37 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050169: Last Updated: Tue Jul 25 13:56:13 2017
 <BR><P>
 <H3>Maximum Stack Usage =        816 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-Tick1_Task &rArr; Mavlink_handller &rArr; mavlink_msg_control &rArr; mavlink_msg_measuring_data_pack &rArr; mavlink_finalize_message_chan
+StartDefaultTask &rArr; Mavlink_handller &rArr; mavlink_msg_control &rArr; mavlink_msg_measuring_data_pack &rArr; mavlink_finalize_message_chan
 <P>
 <H3>
 Mutually Recursive functions
@@ -98,7 +98,7 @@ Function Pointers
  <LI><a href="#[3c]">TIM16_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
  <LI><a href="#[3d]">TIM17_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
  <LI><a href="#[3e]">TIM18_DAC2_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
- <LI><a href="#[61]">TIM19_IRQHandler</a> from stm32f3xx_it.o(i.TIM19_IRQHandler) referenced from startup_stm32f373xc.o(RESET)
+ <LI><a href="#[61]">TIM19_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
  <LI><a href="#[3f]">TIM2_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
  <LI><a href="#[40]">TIM3_IRQHandler</a> from startup_stm32f373xc.o(.text) referenced from startup_stm32f373xc.o(RESET)
  <LI><a href="#[41]">TIM4_IRQHandler</a> from stm32f3xx_it.o(i.TIM4_IRQHandler) referenced from startup_stm32f373xc.o(RESET)
@@ -337,6 +337,9 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f373xc.o(RESET)
 </UL>
 <P><STRONG><a name="[3e]"></a>TIM18_DAC2_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f373xc.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f373xc.o(RESET)
+</UL>
+<P><STRONG><a name="[61]"></a>TIM19_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f373xc.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f373xc.o(RESET)
 </UL>
 <P><STRONG><a name="[3f]"></a>TIM2_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f373xc.o(.text))
@@ -636,8 +639,8 @@ Global Symbols
 
 <P><STRONG><a name="[207]"></a>__decompress1</STRONG> (Thumb, 86 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
-<P><STRONG><a name="[a5]"></a>ADC_handller</STRONG> (Thumb, 426 bytes, Stack size 48 bytes, adc.o(i.ADC_handller))
-<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = ADC_handller &rArr; __aeabi_dsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[a5]"></a>ADC_handller</STRONG> (Thumb, 554 bytes, Stack size 64 bytes, adc.o(i.ADC_handller))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = ADC_handller &rArr; __aeabi_dsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
@@ -648,7 +651,7 @@ Global Symbols
 <LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
+<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
 </UL>
 
 <P><STRONG><a name="[a8]"></a>ADC_init</STRONG> (Thumb, 210 bytes, Stack size 8 bytes, adc.o(i.ADC_init))
@@ -663,7 +666,7 @@ Global Symbols
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADCEx_Calibration_Start
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Error_Handler
 </UL>
-<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
+<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
 </UL>
 
 <P><STRONG><a name="[1d]"></a>BusFault_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f3xx_it.o(i.BusFault_Handler))
@@ -680,7 +683,7 @@ Global Symbols
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CAN_ConfigFilter
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Error_Handler
 </UL>
-<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
+<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
 <P><STRONG><a name="[37]"></a>CAN_RX0_IRQHandler</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f3xx_it.o(i.CAN_RX0_IRQHandler))
@@ -696,7 +699,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_dequeue
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_RXD_data_update
 </UL>
-<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
+<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
 <P><STRONG><a name="[bf]"></a>CAN_TXD_Time_Handller_en_queue</STRONG> (Thumb, 94 bytes, Stack size 24 bytes, can.o(i.CAN_TXD_Time_Handller_en_queue))
@@ -706,7 +709,7 @@ Global Symbols
 <LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;can_queue_is_full
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_TXD_sterimming
 </UL>
-<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
+<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
 <P><STRONG><a name="[b6]"></a>CAN_dequeue</STRONG> (Thumb, 106 bytes, Stack size 4 bytes, can_queue.o(i.CAN_dequeue))
@@ -1620,7 +1623,7 @@ Global Symbols
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
 </UL>
 
-<P><STRONG><a name="[126]"></a>HAL_TIM_Base_MspInit</STRONG> (Thumb, 156 bytes, Stack size 32 bytes, stm32f3xx_hal_msp.o(i.HAL_TIM_Base_MspInit))
+<P><STRONG><a name="[126]"></a>HAL_TIM_Base_MspInit</STRONG> (Thumb, 142 bytes, Stack size 32 bytes, stm32f3xx_hal_msp.o(i.HAL_TIM_Base_MspInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = HAL_TIM_Base_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
@@ -1691,7 +1694,6 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM6_DAC1_IRQHandler
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_IRQHandler
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM19_IRQHandler
 </UL>
 
 <P><STRONG><a name="[13b]"></a>HAL_TIM_MspPostInit</STRONG> (Thumb, 40 bytes, Stack size 24 bytes, stm32f3xx_hal_msp.o(i.HAL_TIM_MspPostInit))
@@ -1883,7 +1885,7 @@ Global Symbols
 <LI><a href="#[174]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mavlink_get_channel_status
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mavlink_frame_char_buffer
 </UL>
-<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tick1_Task
+<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
 <P><STRONG><a name="[1c]"></a>MemManage_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f3xx_it.o(i.MemManage_Handler))
@@ -1931,16 +1933,18 @@ Global Symbols
 <LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_Init
 </UL>
 
-<P><STRONG><a name="[80]"></a>StartDefaultTask</STRONG> (Thumb, 64 bytes, Stack size 0 bytes, main.o(i.StartDefaultTask))
-<BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = StartDefaultTask &rArr; serial_direct_can_bus &rArr; strtol &rArr; _strtoul
+<P><STRONG><a name="[80]"></a>StartDefaultTask</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, main.o(i.StartDefaultTask))
+<BR><BR>[Stack]<UL><LI>Max Depth = 816<LI>Call Chain = StartDefaultTask &rArr; Mavlink_handller &rArr; mavlink_msg_control &rArr; mavlink_msg_measuring_data_pack &rArr; mavlink_finalize_message_chan
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serial_direct_can_bus
 <LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[173]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mavlink_handller
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USB_DEVICE_Init
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DAC_output_handller
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DAC_init
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_init
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_handller
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_TXD_Time_Handller_en_queue
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_RXD_Queue_Handller
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_Config
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.constdata)
 </UL>
@@ -1968,13 +1972,6 @@ Global Symbols
 
 <P><STRONG><a name="[64]"></a>SystemInit</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, system_stm32f3xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f373xc.o(.text)
-</UL>
-<P><STRONG><a name="[61]"></a>TIM19_IRQHandler</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f3xx_it.o(i.TIM19_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = TIM19_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_IC_CaptureCallback &rArr; micros
-</UL>
-<BR>[Calls]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f373xc.o(RESET)
 </UL>
 <P><STRONG><a name="[41]"></a>TIM4_IRQHandler</STRONG> (Thumb, 132 bytes, Stack size 24 bytes, stm32f3xx_it.o(i.TIM4_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = TIM4_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_IC_CaptureCallback &rArr; micros
@@ -2041,15 +2038,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IC_ConfigChannel
 </UL>
 
-<P><STRONG><a name="[81]"></a>Tick1_Task</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, main.o(i.Tick1_Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 816<LI>Call Chain = Tick1_Task &rArr; Mavlink_handller &rArr; mavlink_msg_control &rArr; mavlink_msg_measuring_data_pack &rArr; mavlink_finalize_message_chan
+<P><STRONG><a name="[81]"></a>Tick1_Task</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, main.o(i.Tick1_Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = Tick1_Task &rArr; ADC_handller &rArr; __aeabi_dsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[183]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;moving_avg_update
-<LI><a href="#[173]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mavlink_handller
-<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_TXD_Time_Handller_en_queue
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_RXD_Queue_Handller
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_Config
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_init
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_handller
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.constdata)
 </UL>
@@ -3674,7 +3669,7 @@ Local Symbols
 <LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mavlink_finalize_message_chan
 </UL>
 
-<P><STRONG><a name="[176]"></a>mavlink_msg_control</STRONG> (Thumb, 1288 bytes, Stack size 400 bytes, cli.o(i.mavlink_msg_control))
+<P><STRONG><a name="[176]"></a>mavlink_msg_control</STRONG> (Thumb, 1300 bytes, Stack size 400 bytes, cli.o(i.mavlink_msg_control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 496<LI>Call Chain = mavlink_msg_control &rArr; mavlink_msg_measuring_data_pack &rArr; mavlink_finalize_message_chan
 </UL>
 <BR>[Calls]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_SetTime

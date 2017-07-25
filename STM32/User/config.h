@@ -215,7 +215,7 @@ typedef struct system_t {
 			float PWM_duty_per;
 			bool Relay1_out;
 			uint8_t kelvin_mode;
-			
+			bool calvin_zero_calibration_flag;
 			
 } system_t;
 

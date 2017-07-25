@@ -220,7 +220,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Task_1ms */
-  osThreadDef(Task_1ms, Tick1_Task, osPriorityNormal, 0, 240);
+  osThreadDef(Task_1ms, Tick1_Task, osPriorityHigh, 0, 240);
   Task_1msHandle = osThreadCreate(osThread(Task_1ms), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -916,23 +916,25 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN 5 */
 	USB_DECTETION_ENABLE;
-//		static uint8_t buffer[160];
-//	write_RTC();
+	
+//CAN_Tranmission_Test();
+	CAN_Config();
+	sys.can_to_serial_direct_send=1;
 	
 	serial_to_can_port.port_init();
 	mavlink_port.port_init();
-	cfg.set_R_range = R_RANGE_100;
 
 	DAC_init();
-	ADC_init();
   for(;;)
   {
 
 		DAC_output_handller();
-		ADC_handller();
 
-//		HAL_RTC_GetDate(&hrtc,&RTC_date, RTC_FORMAT_BIN);
-//		HAL_RTC_GetTime(&hrtc,&RTC_time, RTC_FORMAT_BIN);
+		mavlink_port.handller();
+		Mavlink_handller();
+		
+		CAN_TXD_Time_Handller_en_queue();
+		CAN_RXD_Queue_Handller();
 		
 		serial_to_can_port.handller();
 //		polling_read_rx_dma_buffer_to_queue();
@@ -955,25 +957,24 @@ void StartDefaultTask(void const * argument)
 void Tick1_Task(void const * argument)
 {
   /* USER CODE BEGIN Tick1_Task */
-		CAN_Config();
 	
-//CAN_Tranmission_Test();
-	sys.can_to_serial_direct_send=1;
+		cfg.set_R_range = R_RANGE_100;
+		ADC_init();
+
+	
 	//	if(HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_4) !=HAL_OK) {
 //					Error_Handler();
 //	}
 //	C_CTL_LOW;
   /* Infinite loop */
+	
   for(;;)
   {
+		ADC_handller();
 		moving_avg_update();
-		mavlink_port.handller();
-		Mavlink_handller();
-		
-		CAN_TXD_Time_Handller_en_queue();
-		CAN_RXD_Queue_Handller();					
+					
 //		LC_meter_handller();		
-    osDelay(1);
+    osDelay(50);//AC 60Hz = 3PLC = 50ms
   }
   /* USER CODE END Tick1_Task */
 }

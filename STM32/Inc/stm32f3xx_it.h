@@ -62,7 +62,6 @@ void TIM6_DAC1_IRQHandler(void);
 void DMA2_Channel3_IRQHandler(void);
 void DMA2_Channel5_IRQHandler(void);
 void USB_LP_IRQHandler(void);
-void TIM19_IRQHandler(void);
 
 #ifdef __cplusplus
 }
