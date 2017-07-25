@@ -11,6 +11,9 @@ uint32_t kelvin_SDADC[KELVIN_BUFF_SIZE];
 uint32_t tc_SDADC[TC_ADC_BUFF_SIZE];
 
 uint32_t raw_ADC[MAX_12BIT_ADC_CHANNEL];
+
+#define KELVIN_ZERO_CALI_SAMPLE		200
+
 extern SDADC_HandleTypeDef hsdadc1;
 extern SDADC_HandleTypeDef hsdadc3;
 extern ADC_HandleTypeDef hadc1;
@@ -71,7 +74,7 @@ void ADC_init(void) {
 	}
 	if(HAL_ADCEx_Calibration_Start(&hadc1) !=HAL_OK) {
 	}
-	if(HAL_ADC_Start_DMA(&hadc1, &raw_ADC[0],1)!= HAL_OK) {
+	if(HAL_ADC_Start_DMA(&hadc1, &raw_ADC[0],MAX_12BIT_ADC_CHANNEL)!= HAL_OK) {
 			Error_Handler();
 	}
 }
@@ -89,13 +92,14 @@ void ADC_init(void) {
 
 void ADC_handller(void) {
 		static int8_t befor_R_range =-1;
-		static double zero_offset;
-		static uint16_t zero_sample_no=0;
+		static uint16_t zero_calibration_no=0;
+		int64_t kelvin_adc_zero_sum=0;
+		float kelvin_adc_zero_offset=0;
+		int16_t kelvin_adc=0;
+	
 		int16_t kelvin_buff[KELVIN_BUFF_SIZE];
 		uint8_t i;
-	
 		int32_t tc_adc=0;
-		int16_t kelvin_adc=0;
 
 	#if 0
 		tc_adc = (int16_t) ((uint32_t)(raw_SDADC[0] & 0x0000FFFF));
@@ -105,6 +109,8 @@ void ADC_handller(void) {
 			kelvin_buff[i] = (int16_t) ((uint32_t)(kelvin_SDADC[i] & 0x0000FFFF));
 		}
 		arm_mean_q15(kelvin_buff,KELVIN_BUFF_SIZE, &kelvin_adc);
+
+		
 		
 		arm_mean_q31((int32_t *)tc_SDADC,TC_ADC_BUFF_SIZE, &tc_adc);
 		tc_adc = (int16_t)((uint32_t)tc_adc&0xFFFF);
@@ -123,15 +129,28 @@ void ADC_handller(void) {
 				break;
 		}
 		if(befor_R_range != cfg.set_R_range) {		//Range º¯°æ½Ã Relay Á¢Á¡ º¯°æ½Ã°£ µ¿¾È ´ë±â
+			zero_calibration_no=0;
 				vTaskDelay(200);
 		}
 		befor_R_range = cfg.set_R_range;
 		
+		if(sys.kelvin_mode &(1<<ZERO_CALI)) {
+			//ring buffer		
+				zero_calibration_no++;
+				zero_calibration_no = zero_calibration_no % KELVIN_ZERO_CALI_SAMPLE;
+				kelvin_adc_zero_sum +=kelvin_adc;
+				if(!zero_calibration_no) {
+						kelvin_adc_zero_offset = (double)kelvin_adc_zero_sum/KELVIN_ZERO_CALI_SAMPLE;
+						kelvin_adc_zero_sum=0;
+						cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range] =kelvin_adc_zero_offset;
+						sys.kelvin_mode &= ~(1<<ZERO_CALI);
+				}
+		}
 		
-		
-		measu_data.Kelvin_mV = ((double)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//µðÆÛ·»¼È
-			
-		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range]-cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range];
+//		measu_data.Kelvin_mV = ((double)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//µðÆÛ·»¼È
+//		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range]-cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range];
+		measu_data.Kelvin_mV = (((double)kelvin_adc -cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]) * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//µðÆÛ·»¼È
+		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range];
 	
 		
 /*
@@ -147,20 +166,6 @@ AD8495ÀÇ REF_V = 1.25V
 		
 		for(i=0; i <=MAX_12BIT_ADC_CHANNEL; i++) {
 				measu_data.ADC_mV[i] = (float)raw_ADC[i]/ADC_TO_VOLTAGE_RATIO * mcfg.Gain_ADC[i] + mcfg.Offset_ADC_mV[i];
-		}
-		if(sys.kelvin_mode &(1<<ZERO_CALI)) {
-//				sys.calvin_zero_calibration_flag =false;
-//				cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]=0;
-//			zero_offset =  ((double)zero_offset * DISP_VSLOW_RATE + (measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range])) / DISP_VSLOW_SAMPLE;  
-			zero_offset =  ((double)zero_offset * DISP_VSLOW_RATE + measu_data.Kelvin_Ohm) / DISP_VSLOW_SAMPLE;  
-			zero_sample_no++;
-			if(zero_sample_no >=DISP_VSLOW_SAMPLE+10) {
-//				sys.calvin_zero_calibration_flag =false;				
-				zero_sample_no=0;
-				cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range] += zero_offset;
-				zero_offset=0;
-				sys.kelvin_mode &= ~(1<<ZERO_CALI);
-			}
 		}
 		
 }
