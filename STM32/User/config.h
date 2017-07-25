@@ -30,6 +30,11 @@ typedef enum {
 		NG,
 }_result_e;
 
+typedef enum { 
+			ZERO_CALI,
+
+}_kelvin_control_mode_e;
+
 
 typedef enum { 
 			L_SP_R,
@@ -215,7 +220,7 @@ typedef struct system_t {
 			float PWM_duty_per;
 			bool Relay1_out;
 			uint8_t kelvin_mode;
-			bool calvin_zero_calibration_flag;
+//			bool calvin_zero_calibration_flag;
 			
 } system_t;
 

@@ -974,7 +974,7 @@ void Tick1_Task(void const * argument)
 		moving_avg_update();
 					
 //		LC_meter_handller();		
-    osDelay(50);//AC 60Hz = 3PLC = 50ms
+    osDelay(1);//AC 60Hz = 3PLC = 50ms
   }
   /* USER CODE END Tick1_Task */
 }

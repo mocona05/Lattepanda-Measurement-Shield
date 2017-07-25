@@ -357,10 +357,10 @@ static uint16_t mavlink_msg_control( const mavlink_message_t * msg,  uint8_t *  
 					
 					
 					switch(sys.kelvin_mode) {
-						case 1:
-							sys.calvin_zero_calibration_flag =true;
+						case ZERO_CALI:
+//							sys.calvin_zero_calibration_flag =true;
 //							cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]= avg_item[SAMPLE_KELVIN_OHM];
-							sys.kelvin_mode=0;
+//							sys.kelvin_mode=0;
 							break;
 					}
 				}

@@ -74,3 +74,7 @@ f373\adc.o: ..\User\config.h
 f373\adc.o: ..\User\Digital_control.h
 f373\adc.o: ..\User\rtc.h
 f373\adc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+f373\adc.o: ../Drivers/CMSIS/Include/arm_math.h
+f373\adc.o: ../Drivers/CMSIS/Include/core_cm4.h
+f373\adc.o: ../Drivers/CMSIS/Include/arm_const_structs.h
+f373\adc.o: ../Drivers/CMSIS/Include/arm_common_tables.h
