@@ -16,6 +16,9 @@ Lattepanda Measurement Shield
 
 <img src="https://4.bp.blogspot.com/-LTR4NQFNVGM/WVkEyMozDCI/AAAAAAAAAT0/OzUg7wLmQ4Yqlc44jTTvWfkr0xaZXs_aQCLcBGAs/s640/cube.png">
 
+<img src="https://4.bp.blogspot.com/-ixAXZ1Z_Nqo/WXi8bIxGxFI/AAAAAAAAAXU/BxuLgmDT8DMkY3dKkkqD0nOaT6si9CtIQCLcBGAs/s640/Labview.png">
+
+
 https://tk-labs.blogspot.kr/2017/04/lattepanda-single-board-pc-mersument.html
 
 https://youtu.be/Gao8uBBO_YQ?list=UUIPe5kHdhJTlKDBbaLlJSWA
@@ -30,3 +33,4 @@ https://youtu.be/Fq8yy6oz41c?list=UUIPe5kHdhJTlKDBbaLlJSWA
 
 https://tk-labs.blogspot.kr/2017/07/lattepanda-shiled-thermocouple-k-type.html
 
+https://youtu.be/_V4gtJXVWEc
