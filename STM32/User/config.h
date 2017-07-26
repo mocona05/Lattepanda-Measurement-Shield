@@ -142,7 +142,8 @@ typedef struct config_t {
 			_measuer_item_e display_speed[SAMPLE_MAX_ITEM];
 			
 			int16_t calib_TC_table[12];
-			float kelvine_zero_offset[2];
+			float kelvine_zero_offset[R_RANGE_MAX_NUM];
+			float kelvin_adc_gain;
 
 			bool CAN_TX_msg_loopback;
 		_port_typel_e mavlink_port;

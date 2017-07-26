@@ -27,7 +27,7 @@
 
 
 #define KELVIN_ADC_GAIN           (uint32_t) 1
-#define TC_ADC_GAIN           (uint32_t) 2
+#define TC_ADC_GAIN           (uint32_t) 1
 #define SDADC_RESOL          (uint32_t) 65535 /* 2e16 - 1 */
 #define AD8495_mV_FOR_degC		5
 #define AD8495_PULLUP_REG		30000
@@ -36,8 +36,10 @@
 
 	
 #ifdef RANGE_Pin
-	#define R_100_OHM_RANGE					RANGE_GPIO_Port->BSRR = RANGE_Pin
-	#define R_1K_OHM_RANGE         RANGE_GPIO_Port->BRR = RANGE_Pin
+//	#define R_100_OHM_RANGE					RANGE_GPIO_Port->BSRR = RANGE_Pin
+//	#define R_1K_OHM_RANGE         RANGE_GPIO_Port->BRR = RANGE_Pin
+	#define KELVIN_CURRENT_10mA					RANGE_GPIO_Port->BSRR = RANGE_Pin
+	#define KELVIN_CURRENT_1mA         RANGE_GPIO_Port->BRR = RANGE_Pin
 #else
 	#define R_100_RANGE				;
 	#define R_1K_RANGE         ;

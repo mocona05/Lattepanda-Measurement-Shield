@@ -314,6 +314,7 @@ void resetConf(void){
 		
 		cfg.set_C_range = KELVIN_CURRENT_SOURCE_10mA;
 		cfg.set_R_range = R_RANGE_100;
+		cfg.kelvin_adc_gain =1;
 //		cfg.get_char = CDC_getchar;
 //		cfg.strPrint = CDC_Transmit_FS;
 //		cfg.receive_char_check = CDC_is_available;

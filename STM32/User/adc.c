@@ -80,57 +80,116 @@ void ADC_init(void) {
 }
 
 
-#define DISP_NORMAL_SAMPLE	5L
+#define DISP_NORMAL_SAMPLE	10L
 #define DISP_NORMAL_RATE		(DISP_NORMAL_SAMPLE -1)
-#define DISP_SLOW_SAMPLE	20L
+#define DISP_SLOW_SAMPLE	100L
 #define DISP_SLOWL_RATE		(DISP_SLOW_SAMPLE -1)
-#define DISP_VSLOW_SAMPLE	100L
+#define DISP_VSLOW_SAMPLE	500L
 #define DISP_VSLOW_RATE		(DISP_VSLOW_SAMPLE -1)
 
 // SDADC Sampling Speed = 6MHz / 360sampe = 16666.67 Sample/sec 
 //1ms = 16.67 sample
 
-void ADC_handller(void) {
+static void kelvin_SDADC_range_set(kelvin_reg_range_e range) {
+  SDADC_ConfParamTypeDef ConfParamStruct;
+
+	if(HAL_SDADC_Stop_DMA(&hsdadc3)!= HAL_OK) {
+		Error_Handler();
+	}	
+	
+	switch((uint8_t)range) {
+			case R_RANGE_1K:
+				ConfParamStruct.Gain = SDADC_GAIN_1;
+				KELVIN_CURRENT_1mA;
+				cfg.kelvin_adc_gain  =1;
+			
+				break;
+			case R_RANGE_100:
+				ConfParamStruct.Gain = SDADC_GAIN_1;
+				KELVIN_CURRENT_10mA;
+				cfg.kelvin_adc_gain  =1;
+				break;
+			case  R_RANGE_10:
+				ConfParamStruct.Gain = SDADC_GAIN_8;
+				KELVIN_CURRENT_10mA;
+				cfg.kelvin_adc_gain  =8;
+				break;
+			case  R_RANGE_1:
+				ConfParamStruct.Gain = SDADC_GAIN_16;
+				KELVIN_CURRENT_10mA;
+				cfg.kelvin_adc_gain  =16;
+				break;
+			default:
+				cfg.set_R_range = R_RANGE_100;
+				KELVIN_CURRENT_10mA;
+				ConfParamStruct.Gain = SDADC_GAIN_1;
+				cfg.kelvin_adc_gain  =1;
+				break;
+		}
+
+		
+				ConfParamStruct.InputMode = SDADC_INPUT_MODE_DIFF;
+//				ConfParamStruct.Gain = SDADC_GAIN_1;
+				ConfParamStruct.CommonMode = SDADC_COMMON_MODE_VSSA;
+				ConfParamStruct.Offset = 0;
+				if (HAL_SDADC_PrepareChannelConfig(&hsdadc3, SDADC_CONF_INDEX_1, &ConfParamStruct) != HAL_OK)
+				{
+					_Error_Handler(__FILE__, __LINE__);
+				}			
+				
+			//---------------Calibration start -----------------------//	
+				if(HAL_SDADC_CalibrationStart(&hsdadc3, SDADC_CALIBRATION_SEQ_1)!=HAL_OK){
+						Error_Handler();
+				}
+				if(HAL_SDADC_PollForCalibEvent(&hsdadc3, HAL_MAX_DELAY) !=HAL_OK) {
+							Error_Handler();
+				}	
+				if(HAL_SDADC_Start_DMA(&hsdadc3, kelvin_SDADC,KELVIN_BUFF_SIZE)!= HAL_OK) {
+					Error_Handler();
+				}
+	
+}
+
+
+static void kelvin_calculator(void) {
+		int16_t kelvin_buff[KELVIN_BUFF_SIZE];
+		uint8_t i;
+		int16_t kelvin_adc=0;
 		static int8_t befor_R_range =-1;
 		static uint16_t zero_calibration_no=0;
 		static int64_t kelvin_adc_zero_sum=0;
+//		static float  kelvin_adc_gain	= KELVIN_ADC_GAIN;
 		float kelvin_adc_zero_offset=0;
-		int16_t kelvin_adc=0;
+		float kelvin_offset_mV;
+//		float kelvin_offset_Ohm;
 	
-		int16_t kelvin_buff[KELVIN_BUFF_SIZE];
-		uint8_t i;
-		int32_t tc_adc=0;
+	
 
-	#if 0
-		tc_adc = (int16_t) ((uint32_t)(raw_SDADC[0] & 0x0000FFFF));
-		kelvin_adc = (int16_t) ((uint32_t)(raw_SDADC[1] & 0x0000FFFF));
-	#else
 		for(i=0;i< KELVIN_BUFF_SIZE;i++) {
 			kelvin_buff[i] = (int16_t) ((uint32_t)(kelvin_SDADC[i] & 0x0000FFFF));
 		}
 		arm_mean_q15(kelvin_buff,KELVIN_BUFF_SIZE, &kelvin_adc);
 
 		
-		
-		arm_mean_q31((int32_t *)tc_SDADC,TC_ADC_BUFF_SIZE, &tc_adc);
-		tc_adc = (int16_t)((uint32_t)tc_adc&0xFFFF);
-		
-	#endif
-		//SDADC_GAIN_4
 		switch((uint8_t)cfg.set_R_range) {
 			case R_RANGE_1K:
-				R_1K_OHM_RANGE;
+				KELVIN_CURRENT_1mA;
 				break;
 			case R_RANGE_100:
-				R_100_OHM_RANGE;
+				KELVIN_CURRENT_10mA;
+				break;
+			case  R_RANGE_10:
+				KELVIN_CURRENT_10mA;
 				break;
 			default:
 				cfg.set_R_range = R_RANGE_100;
-				R_100_OHM_RANGE;
+				KELVIN_CURRENT_10mA;
 				break;
 		}
+		
 		if(befor_R_range != cfg.set_R_range) {		//Range 변경시 Relay 접점 변경시간 동안 대기
-			zero_calibration_no=0;
+				zero_calibration_no=0;
+				kelvin_SDADC_range_set(cfg.set_R_range);
 				vTaskDelay(200);
 		}
 		befor_R_range = cfg.set_R_range;
@@ -145,24 +204,43 @@ void ADC_handller(void) {
 						kelvin_adc_zero_sum=0;
 						cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range] =kelvin_adc_zero_offset;
 						sys.kelvin_mode &= ~(1<<ZERO_CALI);
+						kelvin_offset_mV =  ((double) kelvin_adc_zero_offset    * (mcfg.Vref_SDADC_mV) / (cfg.kelvin_adc_gain * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//디퍼렌셜
+						cfg.kelvine_zero_offset[cfg.set_R_range ] = kelvin_offset_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range];
 				}
 		}
 		
-//		measu_data.Kelvin_mV = ((double)kelvin_adc * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//디퍼렌셜
-//		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range]-cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range];
-		measu_data.Kelvin_mV = (((double)kelvin_adc -cfg.kelvine_zero_offset[(uint8_t)cfg.set_R_range]) * (mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//디퍼렌셜
-		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range];
+		measu_data.Kelvin_mV = ((double)kelvin_adc * (mcfg.Vref_SDADC_mV) / (cfg.kelvin_adc_gain * SDADC_RESOL))* mcfg.cali_gain_Kelvin_mV[(uint8_t)cfg.set_R_range] + mcfg.cali_offset_Kelvin_mV[(uint8_t)cfg.set_R_range] ;	//디퍼렌셜
+		measu_data.Kelvin_Ohm = measu_data.Kelvin_mV/mcfg.Kelvin_current_mA[(uint8_t)cfg.set_R_range] - cfg.kelvine_zero_offset[cfg.set_R_range ];
 	
+}
+
+
+void ADC_handller(void) {
+		uint8_t i;
+		int32_t tc_adc=0;
+
+	#if 0
+		tc_adc = (int16_t) ((uint32_t)(raw_SDADC[0] & 0x0000FFFF));
+		kelvin_adc = (int16_t) ((uint32_t)(raw_SDADC[1] & 0x0000FFFF));
+	#else
+		arm_mean_q31((int32_t *)tc_SDADC,TC_ADC_BUFF_SIZE, &tc_adc);
+		tc_adc = (int16_t)((uint32_t)tc_adc&0xFFFF);
 		
+	#endif
+		//SDADC_GAIN_4
+
+
 /*
 AD8495는 5mV/degC
 AD8495의 REF_V = 1.25V
 		VOUT 의 RATIO  =  저항 분압비가 1/4 이므로 측정전압 *4 를 하여 AD8495 출력전압 계산		
 */
 		
-		measu_data.TC_mV = ((((double)tc_adc + 32768) * mcfg.Vref_SDADC_mV) / (KELVIN_ADC_GAIN * SDADC_RESOL)) *AD8495_VOUT_RATIO * mcfg.cali_gain_TC_V + mcfg.cali_offset_TC_mV;//싱글엔디드
+		measu_data.TC_mV = ((((double)tc_adc + 32768) * mcfg.Vref_SDADC_mV) / (TC_ADC_GAIN * SDADC_RESOL)) *AD8495_VOUT_RATIO * mcfg.cali_gain_TC_V + mcfg.cali_offset_TC_mV;//싱글엔디드
 		measu_data.TC_temp = ((((double)measu_data.TC_mV) -((float)mcfg.Vref_mV_TC))/AD8495_mV_FOR_degC)*mcfg.cali_gain_TC_Temp  + mcfg.cali_offset_TC_Temp;		
 
+
+	kelvin_calculator();
 //----------------------------12bit ADC -------------------------
 		
 		for(i=0; i <=MAX_12BIT_ADC_CHANNEL; i++) {
