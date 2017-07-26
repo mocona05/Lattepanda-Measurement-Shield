@@ -477,9 +477,9 @@ void HAL_SDADC_MspInit(SDADC_HandleTypeDef* hsdadc)
     hdma_sdadc3.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_sdadc3.Init.MemInc = DMA_MINC_ENABLE;
     hdma_sdadc3.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-    hdma_sdadc3.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;//DMA_MDATAALIGN_HALFWORD;
+    hdma_sdadc3.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
     hdma_sdadc3.Init.Mode = DMA_CIRCULAR;
-    hdma_sdadc3.Init.Priority = DMA_PRIORITY_MEDIUM;
+    hdma_sdadc3.Init.Priority = DMA_PRIORITY_LOW;
     if (HAL_DMA_Init(&hdma_sdadc3) != HAL_OK)
     {
       _Error_Handler(__FILE__, __LINE__);

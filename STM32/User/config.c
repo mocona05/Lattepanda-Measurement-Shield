@@ -312,6 +312,8 @@ void resetConf(void){
 		cfg.kelvine_zero_offset[1]=0;
 		memset(cfg.display_speed ,DISPLAY_NORMAL, sizeof(cfg.display_speed));
 		
+		cfg.set_C_range = KELVIN_CURRENT_SOURCE_10mA;
+		cfg.set_R_range = R_RANGE_100;
 //		cfg.get_char = CDC_getchar;
 //		cfg.strPrint = CDC_Transmit_FS;
 //		cfg.receive_char_check = CDC_is_available;

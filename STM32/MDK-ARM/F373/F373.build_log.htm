@@ -5,7 +5,7 @@
 <h2>Tool Versions:</h2>
 IDE-Version: •ÏVision V5.15
 Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: k ligal, home, LIC=QF82Z-JRPEL-JJ06S-LCJHK-TV5Y8-MT1FT
+License Information: jlwk trsd, home, LIC=CZLPC-7FN4N-EHF8P-M9G1P-XRR7X-3KXUG
  
 Tool Versions:
 Toolchain:       MDK-ARM Standard  Version: 5.15.0
@@ -21,38 +21,60 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.15.0_KEIL
 Dialog DLL:      TCM.DLL V1.14.5.0
  
 <h2>Project:</h2>
-C:\Users\cona0\Documents\Lattepanda-Measurement-Shield\STM32\MDK-ARM\F373.uvprojx
+C:\Users\KHC\Documents\GitHub\Lattepanda-Measurement-Shield\STM32\MDK-ARM\F373.uvprojx
 Project File Date:  07/26/2017
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.05 update 2 (build 169)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'F373'
+compiling main.c...
+compiling usbd_conf.c...
 compiling adc.c...
+compiling lc_meter.c...
+..\User\lc_meter.c(202): warning:  #177-D: function "Measure_CX_LX" was declared but never referenced
+  static bool Measure_CX_LX(bool start) {
+..\User\lc_meter.c(137): warning:  #177-D: function "Measure_CX_LX1" was declared but never referenced
+  static bool Measure_CX_LX1(bool start) {
+..\User\lc_meter.c(72): warning:  #177-D: function "Measure_LX_LX" was declared but never referenced
+  static bool Measure_LX_LX(bool start) {
+..\User\lc_meter.c: 3 warnings, 0 errors
+compiling drv_system.c...
+compiling config.c...
+compiling uart_dma.c...
+compiling serial.c...
+compiling vcp.c...
+compiling can.c...
+compiling can_queue.c...
+compiling function.c...
+compiling rtc.c...
+compiling dac.c...
+compiling cli.c...
+compiling Digital_control.c...
 linking...
-Program Size: Code=41332 RO-data=936 RW-data=868 ZI-data=12372  
-"F373\F373.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=41332 RO-data=936 RW-data=884 ZI-data=12388  
+"F373\F373.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                http://www.keil.com/pack/ARM.CMSIS.5.0.0.pack
-                ARM::CMSIS:CORE:5.0.0
+                http://www.keil.com/pack/ARM.CMSIS.4.3.0.pack
+                ARM::CMSIS:DSP:1.4.5
                 CMSIS (Cortex Microcontroller Software Interface Standard)
-   * Component: CORE Version: 5.0.0
-   * Component: DSP Version: 1.4.6
+   * Component: DSP Version: 1.4.5
+   * Component: CORE Version: 4.1.0
 
 <h2>Collection of Component include folders:</h2>
-  C:\Users\cona0\Documents\Lattepanda-Measurement-Shield\STM32\MDK-ARM\RTE
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include
+  C:\Users\KHC\Documents\GitHub\Lattepanda-Measurement-Shield\STM32\MDK-ARM\RTE
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Include
   C:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.3.0\Device\Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE:5.0.0
-
-   * Component: ARM::CMSIS:DSP:1.4.6
-      Library file:  CMSIS\Lib\ARM\arm_cortexM4lf_math.lib
+   * Component: ARM::CMSIS:DSP:1.4.5
       Include file:  CMSIS\Include\arm_math.h
+      Library file:  CMSIS\Lib\ARM\arm_cortexM4lf_math.lib
+
+   * Component: ARM::CMSIS:CORE:4.1.0
 </pre>
 </body>
 </html>

@@ -93,7 +93,7 @@ void ADC_init(void) {
 void ADC_handller(void) {
 		static int8_t befor_R_range =-1;
 		static uint16_t zero_calibration_no=0;
-		int64_t kelvin_adc_zero_sum=0;
+		static int64_t kelvin_adc_zero_sum=0;
 		float kelvin_adc_zero_offset=0;
 		int16_t kelvin_adc=0;
 	
@@ -116,6 +116,7 @@ void ADC_handller(void) {
 		tc_adc = (int16_t)((uint32_t)tc_adc&0xFFFF);
 		
 	#endif
+		//SDADC_GAIN_4
 		switch((uint8_t)cfg.set_R_range) {
 			case R_RANGE_1K:
 				R_1K_OHM_RANGE;

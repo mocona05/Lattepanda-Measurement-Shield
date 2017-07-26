@@ -4,6 +4,7 @@
 #define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
 #define ct_assert(e) enum { ASSERT_CONCAT(assert_line_, __LINE__) = 1/(!!(e)) }
 
+
 typedef enum  {
 		DISPLAY_FAST,
 		DISPLAY_NORMAL,
@@ -57,8 +58,21 @@ typedef enum {
 
 typedef enum  {
 //		RANGE_100_100K,
+		KELVIN_CURRENT_SOURCE_1mA,
+		KELVIN_CURRENT_SOURCE_10mA,
+	
+		KELVIN_CURRENT_SOURCE_MAX_NUM	
+}kelvin_current_source_e;
+
+typedef enum  {
+//		RANGE_100_100K,
 		R_RANGE_100,
-		R_RANGE_1K,
+		R_RANGE_1K,		//100~1k Ohm
+		R_RANGE_10,		//0.1~10 Ohm
+		R_RANGE_1,		//0.01~1 Ohm
+	
+	
+		R_RANGE_MAX_NUM
 	
 }kelvin_reg_range_e;
 
@@ -122,6 +136,7 @@ typedef struct config_t {
 //		str_printFuncPtr 	strPrint;
 //		revice_char_checkFuncPtr	receive_char_check;
 		kelvin_reg_range_e 	set_R_range; 
+		kelvin_current_source_e set_C_range;
 	  uint8_t LC_mode_set;
 		uint8_t LC_range_set;
 			_measuer_item_e display_speed[SAMPLE_MAX_ITEM];
@@ -161,9 +176,9 @@ typedef struct master_t {
 			float cali_gain_TC_Temp;
 			float  cali_offset_TC_Temp;
 	
-			float Kelvin_current_mA[2];
-			float cali_gain_Kelvin_mV[2];
-			float cali_offset_Kelvin_mV[2];
+			float Kelvin_current_mA[KELVIN_CURRENT_SOURCE_MAX_NUM];
+			float cali_gain_Kelvin_mV[R_RANGE_MAX_NUM];
+			float cali_offset_Kelvin_mV[R_RANGE_MAX_NUM];
 	
 //			float cali_gain_1K_Reg;
 //			float cali_gain_100_Reg;
