@@ -94,25 +94,9 @@ bool  * rxd_id_flag;
 
 typedef struct can_rxd_data_list_t{
 	
-	uint16_t Lambda_1000;
-	uint16_t AFR_100;
-	uint16_t Oxy_100;
-	int16_t Ip_mA;
-	
-	uint16_t Rpvs_Ohm_10;
-	int16_t Vs_mV;
-	uint16_t HTR_Temp_degC;
-	uint8_t Control_status;
-	uint8_t Sensor_type;
-	uint8_t Fuel_type;
-	uint8_t OBD_Enable;
 
-	uint16_t Input_mV;
-	uint16_t HTR_mV;
-	int16_t HTR_mA;
-	int16_t Vp_mV;
-	
-	uint16_t OBD_Value;
+
+
 	uint8_t Temp_INT;
 	
 	

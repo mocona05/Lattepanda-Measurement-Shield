@@ -58,20 +58,6 @@ can_rtr_list_t can_rtr_list[] = {
 can_rxd_type_t can_rxd_list[] = {
 		{&sys.cycleTime, TC_KELVIN_ID, CAN_ID_STD, 8,  0, 16, VAR_UINT16, 1, 0,   NULL },
 	
-//		{&rxd_data.Lambda_1000, CAN_ID_LINEAR_SEN, CAN_ID_STD, 8,  0, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.AFR_100, CAN_ID_LINEAR_SEN, CAN_ID_STD, 8,  16, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.Oxy_100, CAN_ID_LINEAR_SEN, CAN_ID_STD, 8,  32, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.Ip_mA, CAN_ID_LINEAR_SEN, CAN_ID_STD, 8,  48, 16, VAR_INT16, 1, 0,   NULL },
-//		
-//		{&rxd_data.Rpvs_Ohm_10, CAN_ID_STATUS1, CAN_ID_STD, 8,  0, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.Vs_mV, CAN_ID_STATUS1, CAN_ID_STD, 8,  16, 16, VAR_INT16, 1, 0,   NULL },
-//		{&rxd_data.HTR_Temp_degC, CAN_ID_STATUS1, CAN_ID_STD, 8,  32, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.Control_status, CAN_ID_STATUS1, CAN_ID_STD, 8,  48, 4, VAR_UINT8, 1, 0,   NULL },
-//		{&rxd_data.Sensor_type, CAN_ID_STATUS1, CAN_ID_STD, 8,  52, 4, VAR_UINT8, 1, 0,   NULL },
-//		{&rxd_data.Fuel_type, CAN_ID_STATUS1, CAN_ID_STD, 8,  56, 4, VAR_UINT8, 1, 0,   NULL },
-//		
-//		{&rxd_data.Input_mV, CAN_ID_ADC, CAN_ID_STD, 8,  0, 16, VAR_UINT16, 1, 0,   NULL },
-//		{&rxd_data.HTR_mV, CAN_ID_ADC, CAN_ID_STD, 8,  16, 16, VAR_UINT16, 1, 0,   NULL },
 	
 };
 #define CAN_RXD_COUNT (sizeof(can_rxd_list) / sizeof(can_rxd_list[0]))
